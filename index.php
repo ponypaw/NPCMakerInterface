@@ -1,4 +1,5 @@
 <?php
+    require 'config/config.php';
 
     $typeOfCharacter = "";
     $ageRange = "";
@@ -7,20 +8,30 @@
     $ageMin = 0;
     $ageMax = 0;
 
-    $name = "Fred";
-    $age = "";
-    $gender = "";
-    $occupation = "";
-    $strength = 0;
-    $agility = 0;
-    $dexterity = 0;
-    $speed = 0;
-    $intelligence = 0;
-    $perception = 0;
-    $wisdom = 0;
-    $charisma = 0;
+    $pronoun = "";
+    $posPronoun = "";
+
+    $name;
+    $age;
+    $gender;
+    $occupation;
+    $strength;
+    $agility;
+    $dexterity;
+    $speed;
+    $intelligence;
+    $perception;
+    $wisdom;
+    $charisma;
+    $background;
+
+    $stats = ["strength", "agility", "dexterity", "speed", "intelligence", "perception", "wisdom", "charisma"];
 
     if(isset($_POST["submit"])) {
+
+        $name = "Fred";
+        $occupation = "Farmer";
+        $background = "doot";
 
         $typeOfCharacter = $_POST["type"];
         $ageRange = $_POST["age"];
@@ -55,57 +66,100 @@
 
         if ($coinFlip == 0) {
             $gender = "male";
+            $pronoun = "him";
+            $posPronoun = "his";
         } else {
             $gender = "female";
+            $pronoun = "her";
+            $posPronoun = "her";
         }
 
         getStats($totalPoints);
-
-        echo "Age is " . strval($age) . " gender is " . $gender . " strength is " . strval($strength);
+        $name = getName();
 
     }
 
     function getStats($total) {
-        global $strength, $agility, $dexterity, $speed, $intelligence, $perception, $wisdom, $charisma;
+        global $strength, $agility, $dexterity, $speed, $intelligence, $perception, $wisdom, $charisma, $stats;
         $tp = $total;
-        $stats = ["strenth", "agility", "dexterity", "speed", "intelligence", "perception", "wisdom", "charisma"];
-
+        
         if ($strength == 0 || $agility == 0 || $dexterity == 0 || $speed == 0 || $intelligence == 0 || $perception == 0 || $wisdom == 0 || $charisma == 0) {
-            if ($tp > 0) {
-                $statAssigned = $stats[rand(0, 7)];
+            if ($tp > 0 && count($stats) > 0) {
+                $statAssigned = $stats[rand(0, count($stats) - 1)];
                 $amount = rand(1, $tp);
+                $index;
 
                 $tp = $tp - $amount;
 
                 switch ($statAssigned) {
                     case "strength" :
                         $strength = $amount;
+                        $index = array_search('strength',$stats);
                         break;
                     case "agility" :
                         $agility = $amount;
+                        $index = array_search('agility',$stats);
                         break;
                     case "dexterity" :
                         $dexterity = $amount;
+                        $index = array_search('dexterity',$stats);
                         break;
                     case "speed" :
                         $speed = $amount;
+                        $index = array_search('speed',$stats);
                         break;
                     case "intelligence" :
                         $intelligence = $amount;
+                        $index = array_search('intelligence',$stats);
                         break;
                     case "perception" :
                         $perception = $amount;
+                        $index = array_search('perception',$stats);
                         break;
                     case "wisdom" :
                         $wisdom = $amount;
+                        $index = array_search('wisdom',$stats);
                         break;
                     case "charisma" :
                         $charisma = $amount;
+                        $index = array_search('charisma',$stats);
                         break;
                 }
-                print "TP is " . $tp . ". ";
+                unset($stats[$index]);
+                $stats = array_values($stats);
                 getStats($tp);
-            } else {
+            } elseif ($tp == 0 && count($stats) > 0) {
+                foreach($stats as $stat){
+                    switch ($stat) {
+                        case "strength" :
+                            $strength = 0;
+                            break;
+                        case "agility" :
+                            $agility = 0;
+                            break;
+                        case "dexterity" :
+                            $dexterity = 0;
+                            break;
+                        case "speed" :
+                            $speed = 0;
+                            break;
+                        case "perception" :
+                            $perception = 0;
+                            break;
+                        case "wisdom" :
+                            $wisdom = 0;
+                            break;
+                        case "charisma" :
+                            $charisma = 0;
+                            break;
+                        case "intelligence" :
+                            $intelligence = 0;
+                            break;
+                    }
+                }
+            }
+            
+            else {
                 return;
             }
         } else {
@@ -114,62 +168,25 @@
 
     }
 
-    
+    function getName(){
+        global $gender, $con;
+        $newName = "";
 
-        // if (isset ($_GET['gender']) ) {
-        //     $gender =  $_GET['gender'];
-        //     echo 'Gender set to ' + $gender;
-        // } 
-    
-        // if (isset ($_GET['firstName']) ) {
-        //    $name = $_GET['firstName'];
-        // }
-    
-        // if (isset ($_GET['lastName']) ) {
-        //     $name = $name + " " + $_GET['lastName'];
-        // } 
-    
-        // if (isset ($_GET['age']) ) {
-        //     $age =  $_GET['age'];
-        // } 
-    
-        // if (isset ($_GET['occupation']) ) {
-        //     $occupation =  $_GET['occupation'];
-        // } 
-    
-        // if (isset ($_GET['strength']) ) {
-        //     $strength =  $_GET['strength'];
-        // } 
-    
-        // if (isset ($_GET['agility']) ) {
-        //     $agility =  $_GET['agility'];
-        // } 
-    
-        // if (isset ($_GET['dexterity']) ) {
-        //     $dexterity =  $_GET['dexterity'];
-        // } 
-    
-        // if (isset ($_GET['speed']) ) {
-        //     $speed =  $_GET['speed'];
-        // } 
-    
-        // if (isset ($_GET['intelligence']) ) {
-        //     $intelligence =  $_GET['intelligence'];
-        // } 
-    
-        // if (isset ($_GET['perception']) ) {
-        //     $perception =  $_GET['perception'];
-        // } 
-    
-        // if (isset ($_GET['wisdom']) ) {
-        //     $wisdom =  $_GET['wisdom'];
-        // } 
-    
-        // if (isset ($_GET['charisma']) ) {
-        //     $charisma =  $_GET['charisma'];
-        // } 
+        // get random first name from table according to gender
+        $firstNameQuery = mysqli_query($con, "SELECT * FROM name WHERE type = 'first' AND gender = '$gender' ORDER BY RAND() LIMIT 1");
+        $firstName = mysqli_fetch_array($firstNameQuery);
+        $first = (string)$firstName["name"];
 
-    
+        // get random last name
+        $lastNameQuery = mysqli_query($con, "SELECT * FROM name WHERE type = 'last' ORDER BY RAND() LIMIT 1");
+        $lastName = mysqli_fetch_array($lastNameQuery);
+        $last = (string)$lastName["name"];
+
+        // assemble name
+        $newName = $first . " " . $last;
+        // return name
+        return $newName;
+    }
 
 ?>
 
@@ -235,48 +252,48 @@
 
         <?php
             if(!empty($name)){
-                echo '
-                    <table id="characterTable">
-                        <th colspan="8">Character Sheet</th>
+                echo "
+                    <table id='characterTable'>
+                        <th colspan='8'>Character Sheet</th>
                         <tr>
                             <td>Name</td>
-                            <td><?php print (isset($_POST["name"])) ? $name : "???" ?></td>
+                            <td>$name</td>
                             <td>Gender</td>
-                            <td><?php print (isset($_POST["gender"])) ? $_POST["gender"] : "???" ?></td>
+                            <td>$gender</td>
                             <td>Age</td>
-                            <td><?php print (isset($_POST["age"])) ? $_POST["age"] : "???" ?></td>
+                            <td>$age</td>
                             <td>Occupation</td>
-                            <td><?php print (isset($_POST["occupation"])) ? $_POST["occupation"] : "???" ?></td>
+                            <td>$occupation</td>
                         </tr>
                         <tr>
                             <td>Strength</td>
-                            <td><?php print (isset($_POST["strength"])) ? $_POST["strength"] : "???" ?></td>
+                            <td>$strength</td>
                             <td>Agility</td>
-                            <td><?php print (isset($_POST["agility"])) ? $_POST["agility"] : "???" ?></td>
+                            <td>$agility</td>
                             <td>Dexterity</td>
-                            <td><?php print (isset($_POST["dexterity"])) ? $_POST["dexterity"] : "???" ?></td>
+                            <td>$dexterity</td>
                             <td>Speed</td>
-                            <td><?php print (isset($_POST["speed"])) ? $_POST["speed"] : "???" ?></td>
+                            <td>$speed</td>
                         </tr>
                         <tr>
                             <td>Intelligence</td>
-                            <td><?php print (isset($_POST["intelligence"])) ? $_POST["intelligence"] : "???" ?></td>
+                            <td>$intelligence</td>
                             <td>Perception</td>
-                            <td><?php print (isset($_POST["perception"])) ? $_POST["perception"] : "???" ?></td>
+                            <td>$perception</td>
                             <td>Wisdom</td>
-                            <td><?php print (isset($_POST["wisdom"])) ? $_POST["wisdom"] : "???" ?></td>
+                            <td>$wisdom</td>
                             <td>Charisma</td>
-                            <td><?php print (isset($_POST["charisma"])) ? $_POST["charisma"] : "???" ?></td>
+                            <td>$charisma</td>
                         </tr>
-                        <th colspan="8">Background</th>
+                        <th colspan='8'>Background</th>
                         <tr>
-                            <td colspan="8">
-                            <?php print (isset($_POST["background"])) ? $_POST["background"] : "???" ?>  
+                            <td colspan='8'>
+                                $background
                             </td>
                         </tr>
                     </table>
                 
-                ';
+                ";
             } else {
                 echo 'Please select your search terms and press generate.';
             }
