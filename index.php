@@ -1,6 +1,9 @@
 <?php
     require 'config/config.php';
 
+    $file;
+    $fileName;
+
     $typeOfCharacter = "";
     $ageRange = "";
     $totalPoints = 0;
@@ -9,6 +12,7 @@
     $ageMax = 0;
 
     $pronoun = "";
+    $pronoun2 = '';
     $posPronoun = "";
 
     $name;
@@ -29,7 +33,7 @@
 
     if(isset($_POST["submit"])) {
 
-        $name = "Fred";
+        $name = "";
         $occupation = "Farmer";
         $background = "doot";
 
@@ -67,15 +71,26 @@
         if ($coinFlip == 0) {
             $gender = "male";
             $pronoun = "him";
+            $pronoun2 = "he";
             $posPronoun = "his";
         } else {
             $gender = "female";
             $pronoun = "her";
+            $pronoun2 = "she";
             $posPronoun = "her";
         }
 
         getStats($totalPoints);
         $name = getName();
+
+        // get random job
+        $jobQuery = mysqli_query($con, "SELECT * FROM occupations ORDER BY RAND() LIMIT 1");
+        $job = mysqli_fetch_array($jobQuery);
+        $occupation = (string)$job["job"];
+
+        $background = createBackground();
+
+        createFile();
 
     }
 
@@ -184,8 +199,77 @@
 
         // assemble name
         $newName = $first . " " . $last;
+
         // return name
         return $newName;
+    }
+
+    function createBackground() {
+        global $con, $occupation, $age, $pronoun, $pronoun2, $posPronoun;
+        $story = "";
+
+        $childQuery = mysqli_query($con, "SELECT sentence FROM backstories WHERE life_stage = 'child' ORDER BY RAND() LIMIT 1");
+        $childStory = mysqli_fetch_array($childQuery);
+        $story = $story . ucfirst($pronoun2) . " " . (string)$childStory[0] . " as a child.";
+
+        if ($age > 12) {
+
+            $teenQuery = mysqli_query($con, "SELECT sentence FROM backstories WHERE life_stage = 'teen' ORDER BY RAND() LIMIT 1");
+            $teenStory = mysqli_fetch_array($teenQuery);
+            $story = $story . " As a teenager, " . $pronoun2 . " " . (string)$teenStory[0] . ".";
+            
+        } 
+        
+        if ($age > 17) {
+            $adultQuery = mysqli_query($con, "SELECT sentence FROM backstories WHERE life_stage = 'adult' ORDER BY RAND() LIMIT 1");
+            $adultStory = mysqli_fetch_array($adultQuery);
+            $story = $story . " After " . $pronoun2 . " grew up, ". $pronoun2 . " " . (string)$adultStory[0] . ".";
+        }
+        
+        if ($age > 65) {
+            $elderQuery = mysqli_query($con, "SELECT sentence FROM backstories WHERE life_stage = 'elderly' ORDER BY RAND() LIMIT 1");
+            $elderStory = mysqli_fetch_array($elderQuery);
+            $story = $story . " Later in life, ". $pronoun2 . " " . (string)$elderStory[0] . ".";
+        }
+
+        $colorQuery = mysqli_query($con, "SELECT color FROM colors ORDER BY RAND() LIMIT 1");
+        $colorStory = mysqli_fetch_array($colorQuery);
+        $story = $story . " " . ucfirst($posPronoun) . " favorite color was always " . (string)$colorStory[0] . ".";
+        
+
+        return $story;
+
+    }
+
+    function createFile() {
+        global $file, $fileName, $name, $age, $gender, $occupation, $strength, $agility, $dexterity, $speed, $intelligence, $perception, $wisdom, $charisma, $background ;
+
+        $fileName = "NewCharacter.txt";
+
+        $file = fopen($fileName, 'w');
+
+        fputs($file, "Name: " . $name . "\n");
+        fputs($file, "Age: " . $age . "\n");
+        fputs($file, "Gender: " . $gender . "\n");
+        fputs($file, "Occupation: " . $occupation . "\n");
+        fputs($file, "Strength: " . $strength . "\n");
+        fputs($file, "Agility: " . $agility . "\n");
+        fputs($file, "Dexterity: " . $dexterity . "\n");
+        fputs($file, "Speed: " . $speed . "\n");
+        fputs($file, "Intelligence: " . $intelligence . "\n");
+        fputs($file, "Perception: " . $perception . "\n");
+        fputs($file, "Wisdom: " . $wisdom . "\n");
+        fputs($file, "Charisma: " . $charisma . "\n");
+        fputs($file, "Background: " . $background);
+
+        fclose($file);
+    }
+
+    if (isset($_POST["saveFile"])) {
+        global $file, $fileName;
+        readfile(
+            $fileName
+        );
     }
 
 ?>
@@ -237,11 +321,9 @@
                         <input name="statPoints" type="number">
                     </td>
                 </tr>
-                <tr>
-                    <td class="submitButton" colspan="2">
-                        <button name="submit" type="submit">Submit</button>
-                    </td>
-                </tr>
+                <th class="submitButton" colspan="2">
+                    <button name="submit" type="submit">Submit</button>
+                </th>
 
             </table>
         </form>
@@ -291,15 +373,20 @@
                                 $background
                             </td>
                         </tr>
+                        <th colspan='8'><button><a href='NewCharacter.txt' download='$name.txt' > Save File </a></button>
+                        </th>
                     </table>
+                    <br>
+                    
                 
                 ";
             } else {
                 echo 'Please select your search terms and press generate.';
             }
         ?>
+        <br>
 
-        
+
     </div>
 
 
