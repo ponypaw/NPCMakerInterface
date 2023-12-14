@@ -75,7 +75,7 @@ h1 {
     margin: 0 auto;
 }
 
- button {
+button {
     background-color: #5B817F;
     border-color: #CDDBBE;
     color: #DFD9C3;
@@ -133,5 +133,21 @@ form {
     text-align: center;
 }
 
+#left_vine {
+    grid-column: 1;
+    grid-row: 2;
+    max-width: 25%;
+    margin: auto;
+}
 
+#right_vine {
+    grid-column: 3;
+    grid-row: 2;
+    max-width: 25%;
+    margin: auto;
+}
 
+.frameImage {
+    max-width: 100%;
+    opacity: 0.5;;
+}

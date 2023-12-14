@@ -284,6 +284,8 @@
 <body>
     <h1>NPC Maker</h1>
     <hr>
+    <div id="right_vine"><img class="frameImage" src="images/rightVine.png" /></div>
+    <div id="left_vine"><img class="frameImage" src="images/leftVine.png" /></div>
     <div id="formDiv">
         <form action="index.php" method="post">
             <table id="formTable">
